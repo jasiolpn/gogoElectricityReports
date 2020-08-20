@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Electricity generator log entries{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-sliderAccess.js" integrity="sha512-CzATOBw2Wwzxr4t1iuvDpHyYICFLU8qWVDlHpIuFHSLIZSymJWgcGyrLPcnN2I+W/I5CS7ZE65ztLs2MtA0Zmw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.js" integrity="sha512-s5u/JBtkPg+Ff2WEr49/cJsod95UgLHbC00N/GglqdQuLnYhALncz8ZHiW/LxDRGduijLKzeYb7Aal9h3codZA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/i18n/jquery-ui-timepicker-addon-i18n.min.js" integrity="sha512-t2ZIJH81Sh+SWSb4BuA9en4j6fwja+sYOEXbqoepD9lJ+efUGD94gSWqdmgQchGmPez2ojECq4Fm6bKMUAzIiQ==" crossorigin="anonymous"></script>
+    <script src="{{ asset('resources/log-list.js') }}"></script>
+    <script>
+        logList.url = '{{ url }}';
+        logList.page = {{ pagination.page }};
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.6.3/jquery-ui-timepicker-addon.min.css" integrity="sha512-LT9fy1J8pE4Cy6ijbg96UkExgOjCqcxAC7xsnv+mLJxSvftGVmmc236jlPTZXPcBRQcVOWoK1IJhb1dAjtb4lQ==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{{ asset('resources/log-list.css') }}" />
+{% endblock %}
+
+{% block body %}
+    <div class="col-12">
+        <span class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Generator ID
+            </button>
+            <ul id="generators" class="dropdown-menu checkbox-menu allow-focus">
+                {% for i in range(1, 20) %}
+                    <li>
+                        <label>
+                            <input type="checkbox" value="{{ i }}"{% if i in filters.generatorId %} checked{% endif %} /> {{ i }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </span>
+
+        Date from: <input type="text" id="date-from" value="{% if filters.dateFrom is not empty %}{{ filters.dateFrom|date('m/d/Y H:i:s.v') }}{% endif %}" />
+        Date to: <input type="text" id="date-to" value="{% if filters.dateTo is not empty %}{{ filters.dateTo|date('m/d/Y H:i:s.v') }}{% endif %}" />
+
+        <button class="btn" id="btn-apply-filters">Apply filters</button>
+    </div>
+    <div class="col-12 mt-3">
+        <table class="table">
+            <thead>
+            <tr>
+                <td>Generator Id</td>
+                <td>Power</td>
+                <td>Measurement time</td>
+            </tr>
+            </thead>
+            <tbody>
+            {# @var App\Entity\LogEntry record #}
+            {% for record in data %}
+                <tr>
+                    <td>{{ record.generatorId }}</td>
+                    <td>{{ record.power }} MW</td>
+                    <td>{{ record.measurementTime|date('d.m.Y H:i:s.v') }}</td>
+                </tr>
+            {% else %}
+                <tr><td class="text-center" colspan="9">No items</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-12">
+        <label>
+            Page:
+            <select id="select-page">
+                {% for i in range(1, pagination.pages) %}
+                    <option value="{{ i }}"{% if i == pagination.page %} selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+{% endblock %}
