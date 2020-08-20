@@ -35,7 +35,7 @@ class GenerateReportCommand extends Command
     {
         $dateFrom = new \DateTime('now');
         $dateFrom->setTime(0, 0, 0, 0);
-        //$dateFrom->modify('-1 day');
+        $dateFrom->modify('-1 day');
 
         $dateTo = clone $dateFrom;
         $dateTo->modify('-1 millisecond');
