@@ -33,6 +33,17 @@ class InstallCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $createDbCommand = $this->getApplication()->find('doctrine:database:create');
+
+        $code = $createDbCommand->run(new ArrayInput([]), $output);
+
+        if ($code != 0)
+        {
+            $output->writeln('Install failed.');
+
+            return Command::FAILURE;
+        }
+
         $createSchemaCommand = $this->getApplication()->find('doctrine:schema:update');
         $arrayInput = new ArrayInput([
             '--force' => true
